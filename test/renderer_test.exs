@@ -6,7 +6,7 @@ defmodule Chisel.RendererTest do
     {:ok, %{font: font}}
   end
 
-  describe "draw_char/5" do
+  describe "draw_char/6" do
     test "draw a character", %{font: font} do
       assert with_canvas(10, 10, fn write_pixel ->
                Chisel.Renderer.draw_char(
@@ -33,7 +33,7 @@ defmodule Chisel.RendererTest do
     end
   end
 
-  describe "draw_text/5" do
+  describe "draw_text/6" do
     test "draw some letters", %{font: font} do
       assert with_canvas(80, 10, fn write_pixel ->
                Chisel.Renderer.draw_text(
@@ -105,6 +105,51 @@ defmodule Chisel.RendererTest do
                "                                                                                 ",
                "                                                                                 "
              ]
+    end
+
+    test "draw magnified", %{font: font} do
+      assert with_canvas(16, 18, fn write_pixel ->
+               Chisel.Renderer.draw_text(
+                 "X",
+                 0,
+                 0,
+                 font,
+                 write_pixel,
+                 size_x: 2,
+                 size_y: 2
+               )
+             end) == [
+               "                 ",
+               "                 ",
+               "  xxxx    xxxx   ",
+               "  xxxx    xxxx   ",
+               "  xxxx    xxxx   ",
+               "  xxxx    xxxx   ",
+               "    xxxxxxxx     ",
+               "    xxxxxxxx     ",
+               "      xxxx       ",
+               "      xxxx       ",
+               "    xxxxxxxx     ",
+               "    xxxxxxxx     ",
+               "  xxxx    xxxx   ",
+               "  xxxx    xxxx   ",
+               "  xxxx    xxxx   ",
+               "  xxxx    xxxx   ",
+               "                 ",
+               "                 ",
+               "                 "
+             ]
+    end
+  end
+
+  describe "get_text_width/3" do
+    test "normal horizontal size", %{font: font} do
+      assert Chisel.Renderer.get_text_width("abcd", font) == 32
+      assert Chisel.Renderer.get_text_width("abcd", font, size_y: 2) == 32
+    end
+
+    test "size x2", %{font: font} do
+      assert Chisel.Renderer.get_text_width("abcd", font, size_x: 2) == 64
     end
   end
 
