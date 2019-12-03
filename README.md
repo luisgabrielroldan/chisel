@@ -34,7 +34,7 @@ Chisel is a library that uses bitmap fonts to scuplt text on any device that can
 
 Chisel is a general purpose library that can be used to render text on any target based on pixels (LCD, Led matrixs, image files, ...).
 
-Example with `:egd`:
+### Render on an image with `:egd`
 
 ```elixir
   img = :egd.create(200, 50)
@@ -51,3 +51,48 @@ Example with `:egd`:
   :egd.save(:egd.render(img, :png), "test.png")
 ```
 
+### Render ASCII art
+
+```elixir
+  {:ok, agent} = Agent.start_link(fn -> [] end)
+
+  put_pixel = fn x, y ->
+    Agent.update(agent, fn pixels ->
+      [{x, y} | pixels]
+    end)
+  end
+
+  {:ok, font} = Chisel.Font.load("c64.bdf")
+
+  Chisel.Renderer.draw_text("Hello World!", 0, 0, font, put_pixel)
+
+  pixels = Agent.get(agent, & &1)
+
+  Agent.stop(agent)
+
+  for y <- 0..10 do
+    for x <- 0..100 do
+      if Enum.member?(pixels, {x, y}) do
+        "%"
+      else
+        " "
+      end
+    end
+    |> IO.puts()
+  end
+```
+
+Result:
+```
+                                                                                                     
+                                                                                                     
+ %%  %%                                          %%   %%                                   %%        
+ %%  %%           %%%     %%%                    %%   %%                  %%%        %%    %%        
+ %%  %%   %%%%     %%      %%     %%%%           %%   %%  %%%%   %%%%%     %%        %%    %%        
+ %%%%%%  %%  %%    %%      %%    %%  %%          %% % %% %%  %%  %%  %%    %%     %%%%%    %%        
+ %%  %%  %%%%%%    %%      %%    %%  %%          %%%%%%% %%  %%  %%        %%    %%  %%              
+ %%  %%  %%        %%      %%    %%  %%          %%% %%% %%  %%  %%        %%    %%  %%              
+ %%  %%   %%%%    %%%%    %%%%    %%%%           %%   %%  %%%%   %%       %%%%    %%%%%    %%        
+                                                                                                     
+                                                                                                     
+```
