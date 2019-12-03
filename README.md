@@ -2,20 +2,25 @@
 
 Chisel is a library that uses bitmap fonts to scuplt text on any device that can handle pixels.
 
-## Installation
+## Usage
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `chisel` to your list of dependencies in `mix.exs`:
+1. Take a function to draw pixels...
 
 ```elixir
-def deps do
-  [
-    {:chisel, "~> 0.1.0"}
-  ]
-end
+  put_pixel = fn x, y ->
+    thing.draw_pixel(x, y, ...)
+  end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/chisel](https://hexdocs.pm/chisel).
+2. Pick a BDF font (Look for one on the Internet or take one from the fixtures folder on this project)
+
+```elixir
+  {:ok, font} = Chisel.Font.load("foo/bar/font.bdf")
+```
+
+3. Use Chisel to sculpt the text using the provided function and font
+
+```elixir
+  Chisel.Renderer.draw_text("Hello World!", x, y, font, put_pixel)
+```
 
