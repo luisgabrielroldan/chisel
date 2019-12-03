@@ -41,10 +41,26 @@ defmodule Chisel.Renderer do
         ) ::
           {x :: integer(), y :: integer()}
   def draw_text(text, tlx, tly, %Font{} = font, put_pixel, opts \\ []) when is_binary(text) do
+    opts = Keyword.merge(@draw_default_opts, opts)
+
     text
     |> to_charlist()
-    |> Enum.reduce({tlx, tly}, fn char, {x, y} ->
-      draw_char(char, x, y, font, put_pixel, opts)
+    |> Enum.reduce({tlx, tly}, fn
+      char, {x, y} ->
+        case char do
+          # Ignore carraige return
+          10 ->
+            {x, y}
+
+          # New line
+          13 ->
+            %{size: {_, font_h}} = font
+
+            {tlx, y + font_h * opts[:size_y]}
+
+          _ ->
+            draw_char(char, x, y, font, put_pixel, opts)
+        end
     end)
   end
 

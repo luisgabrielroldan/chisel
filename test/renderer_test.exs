@@ -140,6 +140,40 @@ defmodule Chisel.RendererTest do
                "                 "
              ]
     end
+
+    test "draw new lines", %{font: font} do
+      assert with_canvas(40, 20, fn write_pixel ->
+               Chisel.Renderer.draw_text(
+                 "abcd\r\nefgh",
+                 0,
+                 0,
+                 font,
+                 write_pixel
+               )
+             end) == [
+               "                                         ",
+               "                                         ",
+               "                                         ",
+               "         xx                  xx          ",
+               "  xxxx   xx       xxxx       xx          ",
+               "     xx  xxxxx   xx       xxxxx          ",
+               "  xxxxx  xx  xx  xx      xx  xx          ",
+               " xx  xx  xx  xx  xx      xx  xx          ",
+               "  xxxxx  xxxxx    xxxx    xxxxx          ",
+               "                                         ",
+               "                                         ",
+               "            xxx          xx              ",
+               "  xxxx     xx     xxxxx  xx              ",
+               " xx  xx   xxxxx  xx  xx  xxxxx           ",
+               " xxxxxx    xx    xx  xx  xx  xx          ",
+               " xx        xx     xxxxx  xx  xx          ",
+               "  xxxx     xx        xx  xx  xx          ",
+               "                 xxxxx                   ",
+               "                                         ",
+               "                                         ",
+               "                                         "
+             ]
+    end
   end
 
   describe "get_text_width/3" do
