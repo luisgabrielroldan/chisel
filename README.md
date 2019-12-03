@@ -30,3 +30,24 @@ Chisel is a library that uses bitmap fonts to scuplt text on any device that can
 
 (Thanks to [lawik](https://github.com/lawik) for the picture)
 
+## General purpose
+
+Chisel is a general purpose library that can be used to render text on any target based on pixels (LCD, Led matrixs, image files, ...).
+
+Example with `:egd`:
+
+```elixir
+  img = :egd.create(200, 50)
+  color = :egd.color({0, 0, 0})
+
+  put_pixel = fn x, y ->
+    :egd.line(img, {x, y}, {x, y}, color)
+  end
+
+  {:ok, font} = Chisel.Font.load("font.bdf")
+
+  Chisel.Renderer.draw_text("Hello World!", 0, 0, font, put_pixel)
+
+  :egd.save(:egd.render(img, :png), "test.png")
+```
+
