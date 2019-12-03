@@ -24,7 +24,6 @@ defmodule Chisel.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:egd, git: "https://github.com/erlang/egd", tag: "0.10.0", only: [:test]},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]
   end
