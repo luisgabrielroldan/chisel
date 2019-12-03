@@ -24,3 +24,9 @@ Chisel is a library that uses bitmap fonts to scuplt text on any device that can
   Chisel.Renderer.draw_text("Hello World!", x, y, font, put_pixel)
 ```
 
+4. Enjoy!
+
+![Demo](images/demo.jpg)
+
+(Thanks to [lawik](https://github.com/lawik) for the picture)
+
