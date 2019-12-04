@@ -26,7 +26,7 @@ Chisel is a library that uses bitmap fonts to scuplt text on any device that can
 
 4. Enjoy!
 
-![Demo](images/demo.jpg)
+![Demo](images/demo-inky.jpg)
 
 (Thanks to [lawik](https://github.com/lawik) for the picture)
 
@@ -96,3 +96,7 @@ Result:
                                                                                                      
                                                                                                      
 ```
+
+### Samples using [OLED](https://github.com/pappersverk/oled)
+
+![OLED Demo](images/demo-oled.jpg)
