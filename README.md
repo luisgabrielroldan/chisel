@@ -100,3 +100,9 @@ Result:
 ### Samples using [OLED](https://github.com/pappersverk/oled)
 
 ![OLED Demo](images/demo-oled.jpg)
+
+Using the right font is posible to render unicode strings.
+
+Many good BDF font are available [here](https://github.com/olikraus/u8g2/tree/master/tools/font/bdf) on the [U8g2](https://github.com/olikraus/u8g2) library repo.
+
+Check fonts licenses [here](https://github.com/olikraus/u8g2/wiki/fntgrp).
