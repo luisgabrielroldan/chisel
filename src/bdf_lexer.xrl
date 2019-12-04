@@ -18,7 +18,7 @@ Comment = COMMENT.*\n|\r\n|\r
 IntegerPart = {NegativeSign}?0*|{NegativeSign}?{NonZeroDigit}{Digit}*
 Integer = {IntegerPart}
 Decimal = {IntegerPart}{FractionalPart}
-String   = ".*"|[A-Za-z0-9\-_.+]+
+String   = "(.|\n)*"|[A-Za-z0-9\-_.+]+
 
 Rules.
 
