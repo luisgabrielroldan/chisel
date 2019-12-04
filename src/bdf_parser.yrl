@@ -1,7 +1,7 @@
 %% BDF Parser
 
 Nonterminals
-items item values value.
+items item values eols value.
 
 Terminals
 eol string keyword.
@@ -11,9 +11,12 @@ Rootsymbol items.
 items -> item : ['$1'].
 items -> item items : ['$1'] ++ '$2'.
 
-item -> keyword eol : {keyword, to_string(unwrap('$1')), []}.
-item -> keyword values eol : {keyword, to_string(unwrap('$1')), '$2'}.
-item -> values eol : '$1'.
+item -> keyword eols : {keyword, to_string(unwrap('$1')), []}.
+item -> keyword values eols : {keyword, to_string(unwrap('$1')), '$2'}.
+item -> values eols : '$1'.
+
+eols -> eol : '$1'.
+eols -> eol eols: '$1'.
 
 values -> value : ['$1'].
 values -> value values : ['$1'] ++ '$2'.
