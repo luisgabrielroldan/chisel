@@ -49,11 +49,11 @@ defmodule Chisel.Renderer do
       char, {x, y} ->
         case char do
           # Ignore carraige return
-          10 ->
+          13 ->
             {x, y}
 
           # New line
-          13 ->
+          10 ->
             %{size: {_, font_h}} = font
 
             {tlx, y + font_h * opts[:size_y]}

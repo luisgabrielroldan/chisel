@@ -5,21 +5,45 @@ defmodule Chisel.Font.Loader do
   defstruct font: nil, props?: nil, total_chars: nil, char: nil, glyphs: nil
 
   def load_font(filename) do
-    with {:ok, content} <- File.read(filename) do
-      parse_font(content)
-    end
-  end
-
-  defp parse_font(content) do
-    content_charlist = String.to_charlist(content)
-
-    with {:ok, tokens1, _} <- :bdf_lexer.string(content_charlist),
+    with {:ok, content} <- File.read(filename),
+         content_charlist <- String.to_charlist(content),
+         {:ok, tokens1, _} <- :bdf_lexer.string(content_charlist),
          {:ok, tokens2} <- :bdf_parser.parse(tokens1) do
       tokens2
       |> parse()
       |> finish_font()
+      |> ensure_offset()
+      |> ensure_size()
+      |> ensure_name(filename)
     end
   end
+
+  defp ensure_name({:ok, %Font{name: nil} = font}, filename),
+    do: {:ok, %{font | name: Path.basename(filename)}}
+
+  defp ensure_name(res, _filename),
+    do: res
+
+  defp ensure_offset({:ok, %Font{offset: nil} = font}),
+    do: {:ok, %{font | offset: {0, 0}}}
+
+  defp ensure_offset(res),
+    do: res
+
+  defp ensure_size({:ok, %Font{size: nil, glyphs: glyphs} = font}) do
+    size =
+      Enum.reduce(glyphs, {0, 0}, fn {_, %{size: {w, h}, offset: {ox, oy}}}, {cw, ch} ->
+        cw1 = max(w + ox, cw)
+        ch1 = max(h + oy, ch)
+
+        {cw1, ch1}
+      end)
+
+    {:ok, %{font | size: size}}
+  end
+
+  defp ensure_size(res),
+    do: res
 
   defp parse(tokens),
     do: Enum.reduce_while(tokens, create_context(), &parse/2)
