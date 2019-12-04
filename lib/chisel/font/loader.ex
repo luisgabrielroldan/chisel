@@ -14,9 +14,10 @@ defmodule Chisel.Font.Loader do
     content_charlist = String.to_charlist(content)
 
     with {:ok, tokens1, _} <- :bdf_lexer.string(content_charlist),
-         {:ok, tokens2} <- :bdf_parser.parse(tokens1),
-         {:ok, font} <- parse(tokens2) do
-      {:ok, font}
+         {:ok, tokens2} <- :bdf_parser.parse(tokens1) do
+      tokens2
+      |> parse()
+      |> finish_font()
     end
   end
 
@@ -26,20 +27,10 @@ defmodule Chisel.Font.Loader do
   defp parse({:keyword, "STARTFONT", _version}, %{char: nil} = context),
     do: continue(context)
 
-  defp parse(
-         {:keyword, "ENDFONT", []},
-         %{char: nil, total_chars: t, glyphs: glyphs} = context
-       )
-       when t == length(glyphs) do
-    font_glyphs = Map.new(glyphs, fn %{codepoint: k} = v -> {k, v} end)
-
-    context =
-      context
-      |> update_font(fn font ->
-        %{font | glyphs: font_glyphs}
-      end)
-
-    continue({:ok, context.font})
+  defp parse({:keyword, "ENDFONT", []}, %{char: nil} = context) do
+    context
+    |> finish_font()
+    |> continue()
   end
 
   defp parse({:keyword, "FONT", name}, %{char: nil} = context),
@@ -136,6 +127,25 @@ defmodule Chisel.Font.Loader do
 
   defp parse(offense, _),
     do: halt({:error, {:parse, offense}})
+
+  defp finish_font({:ok, %Font{}} = res),
+    do: res
+
+  defp finish_font(%__MODULE__{char: nil, glyphs: glyphs} = context) do
+    font_glyphs = Map.new(glyphs, fn %{codepoint: k} = v -> {k, v} end)
+
+    %{font: font} =
+      context
+      |> update_font(fn font ->
+        %{font | glyphs: font_glyphs}
+      end)
+
+    {:ok, font}
+  end
+
+  defp finish_font(_) do
+    {:error, :load}
+  end
 
   defp create_context() do
     %__MODULE__{
