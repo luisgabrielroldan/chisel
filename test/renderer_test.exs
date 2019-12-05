@@ -2,7 +2,7 @@ defmodule Chisel.RendererTest do
   use ExUnit.Case
 
   setup do
-    {:ok, font} = Chisel.Font.load("test/fixtures/c64.bdf")
+    {:ok, font} = Chisel.Font.load("test/fixtures/5x8.bdf")
     {:ok, %{font: font}}
   end
 
@@ -18,24 +18,23 @@ defmodule Chisel.RendererTest do
                )
              end) ==
                [
-                 "           ",
-                 "           ",
-                 "   xx      ",
-                 "  xxxxx    ",
-                 " xx        ",
-                 "  xxxx     ",
-                 "     xx    ",
-                 " xxxxx     ",
-                 "   xx      ",
-                 "           ",
-                 "           "
+                 "          ",
+                 "  x       ",
+                 " xxx      ",
+                 "x x       ",
+                 " xxx      ",
+                 "  x x     ",
+                 " xxx      ",
+                 "  x       ",
+                 "          ",
+                 "          "
                ]
     end
   end
 
   describe "draw_text/6" do
     test "draw some letters", %{font: font} do
-      assert with_canvas(80, 10, fn write_pixel ->
+      assert with_canvas(50, 10, fn write_pixel ->
                Chisel.Renderer.draw_text(
                  "abcdefghij",
                  0,
@@ -43,23 +42,23 @@ defmodule Chisel.RendererTest do
                  font,
                  write_pixel
                )
-             end) == [
-               "                                                                                 ",
-               "                                                                                 ",
-               "                                                                                 ",
-               "         xx                  xx             xxx          xx        xx        xx  ",
-               "  xxxx   xx       xxxx       xx   xxxx     xx     xxxxx  xx                      ",
-               "     xx  xxxxx   xx       xxxxx  xx  xx   xxxxx  xx  xx  xxxxx    xxx        xx  ",
-               "  xxxxx  xx  xx  xx      xx  xx  xxxxxx    xx    xx  xx  xx  xx    xx        xx  ",
-               " xx  xx  xx  xx  xx      xx  xx  xx        xx     xxxxx  xx  xx    xx        xx  ",
-               "  xxxxx  xxxxx    xxxx    xxxxx   xxxx     xx        xx  xx  xx   xxxx       xx  ",
-               "                                                 xxxxx                    xxxx   ",
-               "                                                                                 "
-             ]
+             end) ==
+               [
+                 "                                                  ",
+                 "                                                  ",
+                 "     x            x        x       x      x     x ",
+                 "     x            x       x x      x              ",
+                 " xxx xxx    xx  xxx  xx   x    xx  xxx   xx     x ",
+                 "x  x x  x  x   x  x x xx xxx  x  x x  x   x     x ",
+                 "x  x x  x  x   x  x xx    x    xxx x  x   x     x ",
+                 " xxx xxx    xx  xxx  xx   x      x x  x  xxx  x x ",
+                 "                               xx              x  ",
+                 "                                                  "
+               ]
     end
 
     test "draw some numbers", %{font: font} do
-      assert with_canvas(80, 10, fn write_pixel ->
+      assert with_canvas(50, 10, fn write_pixel ->
                Chisel.Renderer.draw_text(
                  "1234567890",
                  0,
@@ -69,22 +68,21 @@ defmodule Chisel.RendererTest do
                )
              end) ==
                [
-                 "                                                                                 ",
-                 "                                                                                 ",
-                 "   xx     xxxx    xxxx       xx  xxxxxx   xxxx   xxxxxx   xxxx    xxxx    xxxx   ",
-                 "   xx    xx  xx  xx  xx     xxx  xx      xx  xx  xx  xx  xx  xx  xx  xx  xx  xx  ",
-                 "  xxx        xx      xx    xxxx  xxxxx   xx         xx   xx  xx  xx  xx  xx xxx  ",
-                 "   xx       xx     xxx   xx  xx      xx  xxxxx     xx     xxxx    xxxxx  xxx xx  ",
-                 "   xx     xx         xx  xxxxxxx     xx  xx  xx    xx    xx  xx      xx  xx  xx  ",
-                 "   xx    xx      xx  xx      xx  xx  xx  xx  xx    xx    xx  xx  xx  xx  xx  xx  ",
-                 " xxxxxx  xxxxxx   xxxx       xx   xxxx    xxxx     xx     xxxx    xxxx    xxxx   ",
-                 "                                                                                 ",
-                 "                                                                                 "
+                 "                                                  ",
+                 "                                                  ",
+                 "  x   xx  xxxx   x  xxxx  xx  xxxx  xx   xx    x  ",
+                 " xx  x  x   x   xx  x    x       x x  x x  x  x x ",
+                 "  x     x  xx  x x  xxx  xxx    x   xx  x  x  x x ",
+                 "  x   xx     x xxxx    x x  x   x  x  x  xxx  x x ",
+                 "  x  x    x  x   x  x  x x  x  x   x  x    x  x x ",
+                 " xxx xxxx  xx    x   xx   xx   x    xx   xx    x  ",
+                 "                                                  ",
+                 "                                                  "
                ]
     end
 
     test "draw some symbols", %{font: font} do
-      assert with_canvas(80, 10, fn write_pixel ->
+      assert with_canvas(50, 10, fn write_pixel ->
                Chisel.Renderer.draw_text(
                  "!@#-<=>+{}",
                  0,
@@ -92,19 +90,19 @@ defmodule Chisel.RendererTest do
                  font,
                  write_pixel
                )
-             end) == [
-               "                                                                                 ",
-               "                                                                                 ",
-               "   xx     xxxx   xx  xx             xxx          xxx               xxx    xxx    ",
-               "   xx    xx  xx  xx  xx            xx              xx      xx     xx        xx   ",
-               "   xx    xx xxx xxxxxxxx          xx     xxxxxx     xx     xx     xx        xx   ",
-               "   xx    xx xxx  xx  xx  xxxxxx  xx                  xx  xxxxxx  xx          xx  ",
-               "         xx     xxxxxxxx          xx     xxxxxx     xx     xx     xx        xx   ",
-               "         xx   x  xx  xx            xx              xx      xx     xx        xx   ",
-               "   xx     xxxx   xx  xx             xxx          xxx               xxx    xxx    ",
-               "                                                                                 ",
-               "                                                                                 "
-             ]
+             end) ==
+               [
+                 "                                                  ",
+                 "       xx  x x                            xx xx   ",
+                 "  x   x  x x x         x       x         x     x  ",
+                 "  x  x  xxxxxxx       x         x    x    x   x   ",
+                 "  x  x x x x x       x   xxxx    x   x  xx     xx ",
+                 "  x  x x xxxxxxxxxx  x           x xxxxx  x   x   ",
+                 "     x  x  x x        x  xxxx   x    x   x     x  ",
+                 "  x   x    x x         x       x     x    xx xx   ",
+                 "       xx                                         ",
+                 "                                                  "
+               ]
     end
 
     test "draw magnified", %{font: font} do
@@ -115,34 +113,34 @@ defmodule Chisel.RendererTest do
                  0,
                  font,
                  write_pixel,
-                 size_x: 2,
+                 size_x: 3,
                  size_y: 2
                )
-             end) == [
-               "                 ",
-               "                 ",
-               "  xxxx    xxxx   ",
-               "  xxxx    xxxx   ",
-               "  xxxx    xxxx   ",
-               "  xxxx    xxxx   ",
-               "    xxxxxxxx     ",
-               "    xxxxxxxx     ",
-               "      xxxx       ",
-               "      xxxx       ",
-               "    xxxxxxxx     ",
-               "    xxxxxxxx     ",
-               "  xxxx    xxxx   ",
-               "  xxxx    xxxx   ",
-               "  xxxx    xxxx   ",
-               "  xxxx    xxxx   ",
-               "                 ",
-               "                 ",
-               "                 "
-             ]
+             end) ==
+               [
+                 "                ",
+                 "                ",
+                 "                ",
+                 "xxx      xxx    ",
+                 "xxx      xxx    ",
+                 "xxx      xxx    ",
+                 "xxx      xxx    ",
+                 "   xxxxxx       ",
+                 "   xxxxxx       ",
+                 "   xxxxxx       ",
+                 "   xxxxxx       ",
+                 "xxx      xxx    ",
+                 "xxx      xxx    ",
+                 "xxx      xxx    ",
+                 "xxx      xxx    ",
+                 "                ",
+                 "                ",
+                 "                "
+               ]
     end
 
     test "draw new lines", %{font: font} do
-      assert with_canvas(40, 20, fn write_pixel ->
+      assert with_canvas(20, 20, fn write_pixel ->
                Chisel.Renderer.draw_text(
                  "abcd\r\nefgh",
                  0,
@@ -150,40 +148,40 @@ defmodule Chisel.RendererTest do
                  font,
                  write_pixel
                )
-             end) == [
-               "                                         ",
-               "                                         ",
-               "                                         ",
-               "         xx                  xx          ",
-               "  xxxx   xx       xxxx       xx          ",
-               "     xx  xxxxx   xx       xxxxx          ",
-               "  xxxxx  xx  xx  xx      xx  xx          ",
-               " xx  xx  xx  xx  xx      xx  xx          ",
-               "  xxxxx  xxxxx    xxxx    xxxxx          ",
-               "                                         ",
-               "                                         ",
-               "            xxx          xx              ",
-               "  xxxx     xx     xxxxx  xx              ",
-               " xx  xx   xxxxx  xx  xx  xxxxx           ",
-               " xxxxxx    xx    xx  xx  xx  xx          ",
-               " xx        xx     xxxxx  xx  xx          ",
-               "  xxxx     xx        xx  xx  xx          ",
-               "                 xxxxx                   ",
-               "                                         ",
-               "                                         ",
-               "                                         "
-             ]
+             end) ==
+               [
+                 "                    ",
+                 "                    ",
+                 "     x            x ",
+                 "     x            x ",
+                 " xxx xxx    xx  xxx ",
+                 "x  x x  x  x   x  x ",
+                 "x  x x  x  x   x  x ",
+                 " xxx xxx    xx  xxx ",
+                 "                    ",
+                 "                    ",
+                 "       x       x    ",
+                 "      x x      x    ",
+                 " xx   x    xx  xxx  ",
+                 "x xx xxx  x  x x  x ",
+                 "xx    x    xxx x  x ",
+                 " xx   x      x x  x ",
+                 "           xx       ",
+                 "                    ",
+                 "                    ",
+                 "                    "
+               ]
     end
   end
 
   describe "get_text_width/3" do
     test "normal horizontal size", %{font: font} do
-      assert Chisel.Renderer.get_text_width("abcd", font) == 32
-      assert Chisel.Renderer.get_text_width("abcd", font, size_y: 2) == 32
+      assert Chisel.Renderer.get_text_width("abcd", font) == 20
+      assert Chisel.Renderer.get_text_width("abcd", font, size_y: 2) == 20
     end
 
     test "size x2", %{font: font} do
-      assert Chisel.Renderer.get_text_width("abcd", font, size_x: 2) == 64
+      assert Chisel.Renderer.get_text_width("abcd", font, size_x: 2) == 40
     end
   end
 
@@ -202,8 +200,8 @@ defmodule Chisel.RendererTest do
 
     Agent.stop(agent)
 
-    for y <- 0..h do
-      for x <- 0..w do
+    for y <- 0..(h - 1) do
+      for x <- 0..(w - 1) do
         if Enum.member?(res, {x, y}) do
           "x"
         else

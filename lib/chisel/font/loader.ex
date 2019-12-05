@@ -1,11 +1,12 @@
 defmodule Chisel.Font.Loader do
+  @moduledoc false
   alias Chisel.Font
   alias Chisel.Font.Glyph
 
   defstruct font: nil, props?: nil, total_chars: nil, char: nil, glyphs: nil
 
   def load_font(filename) do
-    with {:ok, content} <- File.read(filename),
+    with {:ok, content} <- read_file(filename),
          content_charlist <- String.to_charlist(content),
          {:ok, tokens1, _} <- :bdf_lexer.string(content_charlist),
          {:ok, tokens2} <- :bdf_parser.parse(tokens1) do
@@ -15,6 +16,16 @@ defmodule Chisel.Font.Loader do
       |> ensure_offset()
       |> ensure_size()
       |> ensure_name(filename)
+    end
+  end
+
+  defp read_file(filename) do
+    case File.open(filename) do
+      {:ok, file} ->
+        {:ok, IO.read(file, :all)}
+
+      error ->
+        error
     end
   end
 

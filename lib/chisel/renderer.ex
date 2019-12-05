@@ -12,12 +12,10 @@ defmodule Chisel.Renderer do
     size_y: 1
   ]
 
-  @type draw_option :: {:size_x, integer()} | {:size_y, integer}
-
   @typedoc """
   Use `size_x` and `size_y` options to scale up the font.
   """
-  @type draw_options :: list(draw_option)
+  @type draw_options :: list({:size_x, integer()} | {:size_y, integer})
 
   @typedoc """
   The function used to paint the canvas.

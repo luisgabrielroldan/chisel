@@ -1,7 +1,5 @@
 defmodule Chisel.Font.Glyph do
-  @moduledoc """
-  Represents an element of writing.
-  """
+  @moduledoc false
 
   @type codepoint :: integer()
   @type data :: list(binary())
