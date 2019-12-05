@@ -1,5 +1,5 @@
 # Chisel
-
+[![CircleCI](https://circleci.com/gh/luisgabrielroldan/chisel.svg?style=svg)](https://circleci.com/gh/luisgabrielroldan/chisel)
 [![Hex version](https://img.shields.io/hexpm/v/chisel.svg "Hex version")](https://hex.pm/packages/chisel)
 
 Chisel is a library that uses bitmap fonts to scuplt text on any device that can handle pixels.
