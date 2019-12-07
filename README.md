@@ -1,6 +1,7 @@
 # Chisel
 [![CircleCI](https://circleci.com/gh/luisgabrielroldan/chisel.svg?style=svg)](https://circleci.com/gh/luisgabrielroldan/chisel)
 [![Hex version](https://img.shields.io/hexpm/v/chisel.svg "Hex version")](https://hex.pm/packages/chisel)
+[![Hex docs](http://img.shields.io/badge/hex.pm-docs-green.svg "Hex docs")](https://hexdocs.pm/chisel)
 
 Chisel is a library that uses bitmap fonts to sculpt text on any device that can handle pixels.
 
