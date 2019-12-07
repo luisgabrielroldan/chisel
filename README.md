@@ -56,19 +56,13 @@ Chisel is a general purpose library that can be used to render text on any targe
 ### Render ASCII art
 
 ```elixir
-  {:ok, agent} = Agent.start_link(fn -> [] end)
-
   put_pixel = fn x, y ->
-    Agent.update(agent, fn pixels ->
-      [{x, y} | pixels]
-    end)
+    [{x, y} | pixels]
   end
 
   {:ok, font} = Chisel.Font.load("c64.bdf")
 
-  Chisel.Renderer.draw_text("Hello World!", 0, 0, font, put_pixel)
-
-  pixels = Agent.get(agent, & &1)
+  {pixels, _, _} = Chisel.Renderer.reduce_draw_text("Hello World!", 0, 0, font, [], put_pixel)
 
   Agent.stop(agent)
 

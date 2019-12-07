@@ -12,6 +12,8 @@ defmodule Chisel.Renderer do
     size_y: 1
   ]
 
+  @type acc :: any()
+
   @typedoc """
   Use `size_x` and `size_y` options to scale up the font.
   """
@@ -23,6 +25,13 @@ defmodule Chisel.Renderer do
   Chisel will use this function to draw the text.
   """
   @type pixel_fun :: (x :: integer(), y :: integer() -> term())
+
+  @typedoc """
+  The function used to paint the canvas.
+
+  Chisel will use this function to draw the text.
+  """
+  @type reduce_pixel_fun :: (acc :: acc(), x :: integer(), y :: integer() -> acc())
 
   @doc """
   Draws an string
@@ -39,27 +48,11 @@ defmodule Chisel.Renderer do
         ) ::
           {x :: integer(), y :: integer()}
   def draw_text(text, tlx, tly, %Font{} = font, put_pixel, opts \\ []) when is_binary(text) do
-    opts = Keyword.merge(@draw_default_opts, opts)
+    reduce_pixel = fn x, y, _ -> put_pixel.(x, y) end
 
-    text
-    |> to_charlist()
-    |> Enum.reduce({tlx, tly}, fn
-      char, {x, y} ->
-        case char do
-          # Ignore carraige return
-          13 ->
-            {x, y}
+    {_acc, dx, dy} = reduce_draw_text(text, tlx, tly, font, nil, reduce_pixel, opts)
 
-          # New line
-          10 ->
-            %{size: {_, font_h}} = font
-
-            {tlx, y + font_h * opts[:size_y]}
-
-          _ ->
-            draw_char(char, x, y, font, put_pixel, opts)
-        end
-    end)
+    {dx, dy}
   end
 
   @doc """
@@ -78,6 +71,70 @@ defmodule Chisel.Renderer do
           {x :: integer(), y :: integer()}
   def draw_char(codepoint, clx, cly, %Font{} = font, put_pixel, opts \\ [])
       when is_integer(codepoint) do
+    reduce_pixel = fn x, y, _ -> put_pixel.(x, y) end
+
+    {_acc, dx, dy} = reduce_draw_char(codepoint, clx, cly, font, nil, reduce_pixel, opts)
+
+    {dx, dy}
+  end
+
+  @doc """
+  Draws an string calling a reducer function
+
+  The coordinates (`tlx`, `tly`) are for the top left corner.
+  """
+  @spec reduce_draw_text(
+          text :: String.t(),
+          tlx :: integer(),
+          tly :: integer(),
+          font :: Font.t(),
+          acc :: acc(),
+          reduce_pixel :: reduce_pixel_fun,
+          opts :: draw_options()
+        ) ::
+          {x :: integer(), y :: integer()}
+  def reduce_draw_text(text, tlx, tly, %Font{} = font, acc, reduce_pixel, opts \\ [])
+      when is_binary(text) do
+    opts = Keyword.merge(@draw_default_opts, opts)
+
+    text
+    |> to_charlist()
+    |> Enum.reduce({acc, tlx, tly}, fn
+      char, {acc1, x, y} ->
+        case char do
+          # Ignore carraige return
+          13 ->
+            {acc1, x, y}
+
+          # New line
+          10 ->
+            %{size: {_, font_h}} = font
+
+            {acc1, tlx, y + font_h * opts[:size_y]}
+
+          _ ->
+            reduce_draw_char(char, x, y, font, acc1, reduce_pixel, opts)
+        end
+    end)
+  end
+
+  @doc """
+  Draws a character using the codepoint calling a reducer function.
+
+  The coordinates (`tlx`, `tly`) are for the top left corner.
+  """
+  @spec reduce_draw_char(
+          codepoint :: integer(),
+          clx :: integer(),
+          cly :: integer(),
+          font :: Font.t(),
+          acc :: acc(),
+          reduce_pixel :: reduce_pixel_fun,
+          opts :: draw_options()
+        ) ::
+          {x :: integer(), y :: integer()}
+  def reduce_draw_char(codepoint, clx, cly, %Font{} = font, acc, reduce_pixel, opts \\ [])
+      when is_integer(codepoint) do
     opts = Keyword.merge(@draw_default_opts, opts)
 
     size_x = opts[:size_x]
@@ -86,14 +143,14 @@ defmodule Chisel.Renderer do
 
     case lookup_glyph(codepoint, font) do
       %Glyph{} = glyph ->
-        draw_glyph(glyph, clx, cly + font_h, put_pixel, opts)
+        acc1 = draw_glyph(glyph, clx, cly + font_h, reduce_pixel, opts, acc)
 
         glyph_dx = glyph.dwx
 
-        {clx + glyph_dx * size_x, cly}
+        {acc1, clx + glyph_dx * size_x, cly}
 
       _ ->
-        {clx, cly}
+        {acc, clx, cly}
     end
   end
 
@@ -123,7 +180,7 @@ defmodule Chisel.Renderer do
     end)
   end
 
-  defp draw_glyph(%Glyph{} = glyph, gx, gy, put_pixel, opts) do
+  defp draw_glyph(%Glyph{} = glyph, gx, gy, reduce_pixel, opts, acc) do
     opts = Keyword.merge(@draw_default_opts, opts)
 
     %{
@@ -135,35 +192,37 @@ defmodule Chisel.Renderer do
     x = gx - bb_xoff
     y = gy - bb_yoff - bb_h
 
-    do_render_glyph(data, {x, y}, put_pixel, opts)
+    do_render_glyph(data, {x, y}, reduce_pixel, opts, acc)
   end
 
-  defp do_render_glyph(rows, pos, put_pixel, opts, iy \\ 0)
+  defp do_render_glyph(rows, pos, reduce_pixel, opts, acc, iy \\ 0)
 
-  defp do_render_glyph([], _pos, _put_pixel, _opts, _iy),
-    do: nil
+  defp do_render_glyph([], _pos, _put_pixel, _opts, acc, _iy),
+    do: acc
 
-  defp do_render_glyph([row | rows], pos, put_pixel, opts, iy) do
-    render_glyph_row(row, pos, iy, put_pixel, opts)
+  defp do_render_glyph([row | rows], pos, reduce_pixel, opts, acc, iy) do
+    acc = render_glyph_row(row, pos, iy, reduce_pixel, opts, acc)
 
-    do_render_glyph(rows, pos, put_pixel, opts, iy + opts[:size_y])
+    do_render_glyph(rows, pos, reduce_pixel, opts, acc, iy + opts[:size_y])
   end
 
-  defp render_glyph_row(row, pos, iy, put_pixel, opts, ix \\ 0)
+  defp render_glyph_row(row, pos, iy, reduce_pixel, opts, acc, ix \\ 0)
 
-  defp render_glyph_row(<<>>, _pos, _iy, _put_pixel, _opts, _ix),
-    do: nil
+  defp render_glyph_row(<<>>, _pos, _iy, _put_pixel, _opts, acc, _ix),
+    do: acc
 
-  defp render_glyph_row(<<1::1, rest::bitstring>>, {x, y} = pos, iy, put_pixel, opts, ix) do
-    for ox <- 0..(opts[:size_x] - 1), oy <- 0..(opts[:size_y] - 1) do
-      put_pixel.(x + ix + ox, y + iy + oy)
-    end
+  defp render_glyph_row(<<1::1, rest::bitstring>>, {x, y} = pos, iy, reduce_pixel, opts, acc, ix) do
+    acc =
+      for(ox <- 0..(opts[:size_x] - 1), oy <- 0..(opts[:size_y] - 1), do: {ox, oy})
+      |> Enum.reduce(acc, fn {ox, oy}, acc1 ->
+        reduce_pixel.(x + ix + ox, y + iy + oy, acc1)
+      end)
 
-    render_glyph_row(rest, pos, iy, put_pixel, opts, ix + opts[:size_x])
+    render_glyph_row(rest, pos, iy, reduce_pixel, opts, acc, ix + opts[:size_x])
   end
 
-  defp render_glyph_row(<<_::1, rest::bitstring>>, pos, iy, put_pixel, opts, ix),
-    do: render_glyph_row(rest, pos, iy, put_pixel, opts, ix + opts[:size_x])
+  defp render_glyph_row(<<_::1, rest::bitstring>>, pos, iy, reduce_pixel, opts, acc, ix),
+    do: render_glyph_row(rest, pos, iy, reduce_pixel, opts, acc, ix + opts[:size_x])
 
   defp lookup_glyph(char, font),
     do: Map.get(font.glyphs, char)

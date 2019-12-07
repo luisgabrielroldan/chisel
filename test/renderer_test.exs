@@ -6,14 +6,15 @@ defmodule Chisel.RendererTest do
     {:ok, %{font: font}}
   end
 
-  describe "draw_char/6" do
+  describe "reduce_draw_char/7" do
     test "draw a character", %{font: font} do
-      assert with_canvas(10, 10, fn write_pixel ->
-               Chisel.Renderer.draw_char(
+      assert test_canvas(10, 10, fn write_pixel ->
+               Chisel.Renderer.reduce_draw_char(
                  36,
                  0,
                  0,
                  font,
+                 [],
                  write_pixel
                )
              end) ==
@@ -32,14 +33,15 @@ defmodule Chisel.RendererTest do
     end
   end
 
-  describe "draw_text/6" do
+  describe "reduce_draw_text/7" do
     test "draw some letters", %{font: font} do
-      assert with_canvas(50, 10, fn write_pixel ->
-               Chisel.Renderer.draw_text(
+      assert test_canvas(50, 10, fn write_pixel ->
+               Chisel.Renderer.reduce_draw_text(
                  "abcdefghij",
                  0,
                  0,
                  font,
+                 [],
                  write_pixel
                )
              end) ==
@@ -58,12 +60,13 @@ defmodule Chisel.RendererTest do
     end
 
     test "draw some numbers", %{font: font} do
-      assert with_canvas(50, 10, fn write_pixel ->
-               Chisel.Renderer.draw_text(
+      assert test_canvas(50, 10, fn write_pixel ->
+               Chisel.Renderer.reduce_draw_text(
                  "1234567890",
                  0,
                  0,
                  font,
+                 [],
                  write_pixel
                )
              end) ==
@@ -82,12 +85,13 @@ defmodule Chisel.RendererTest do
     end
 
     test "draw some symbols", %{font: font} do
-      assert with_canvas(50, 10, fn write_pixel ->
-               Chisel.Renderer.draw_text(
+      assert test_canvas(50, 10, fn write_pixel ->
+               Chisel.Renderer.reduce_draw_text(
                  "!@#-<=>+{}",
                  0,
                  0,
                  font,
+                 [],
                  write_pixel
                )
              end) ==
@@ -106,12 +110,13 @@ defmodule Chisel.RendererTest do
     end
 
     test "draw magnified", %{font: font} do
-      assert with_canvas(16, 18, fn write_pixel ->
-               Chisel.Renderer.draw_text(
+      assert test_canvas(16, 18, fn write_pixel ->
+               Chisel.Renderer.reduce_draw_text(
                  "X",
                  0,
                  0,
                  font,
+                 [],
                  write_pixel,
                  size_x: 3,
                  size_y: 2
@@ -140,12 +145,13 @@ defmodule Chisel.RendererTest do
     end
 
     test "draw new lines", %{font: font} do
-      assert with_canvas(20, 20, fn write_pixel ->
-               Chisel.Renderer.draw_text(
+      assert test_canvas(20, 20, fn write_pixel ->
+               Chisel.Renderer.reduce_draw_text(
                  "abcd\r\nefgh",
                  0,
                  0,
                  font,
+                 [],
                  write_pixel
                )
              end) ==
@@ -174,6 +180,58 @@ defmodule Chisel.RendererTest do
     end
   end
 
+  describe "draw_char/6" do
+    test "draw a character", %{font: font} do
+      assert test_canvas_no_reducer(10, 10, fn write_pixel ->
+               Chisel.Renderer.draw_char(
+                 36,
+                 0,
+                 0,
+                 font,
+                 write_pixel
+               )
+             end) ==
+               [
+                 "          ",
+                 "  x       ",
+                 " xxx      ",
+                 "x x       ",
+                 " xxx      ",
+                 "  x x     ",
+                 " xxx      ",
+                 "  x       ",
+                 "          ",
+                 "          "
+               ]
+    end
+  end
+
+  describe "draw_text/6" do
+    test "draw some letters", %{font: font} do
+      assert test_canvas_no_reducer(50, 10, fn write_pixel ->
+               Chisel.Renderer.draw_text(
+                 "foobar1234",
+                 0,
+                 0,
+                 font,
+                 write_pixel
+               )
+             end) ==
+               [
+                 "                                                  ",
+                 "                                                  ",
+                 "  x            x                x   xx  xxxx   x  ",
+                 " x x           x               xx  x  x   x   xx  ",
+                 " x    xx   xx  xxx   xxx x x    x     x  xx  x x  ",
+                 "xxx  x  x x  x x  x x  x xx x   x   xx     x xxxx ",
+                 " x   x  x x  x x  x x  x x      x  x    x  x   x  ",
+                 " x    xx   xx  xxx   xxx x     xxx xxxx  xx    x  ",
+                 "                                                  ",
+                 "                                                  "
+               ]
+    end
+  end
+
   describe "get_text_width/3" do
     test "normal horizontal size", %{font: font} do
       assert Chisel.Renderer.get_text_width("abcd", font) == 20
@@ -185,7 +243,26 @@ defmodule Chisel.RendererTest do
     end
   end
 
-  def with_canvas(w, h, fun) do
+  def test_canvas(w, h, fun) do
+    put_pixel = fn x, y, pixels ->
+      [{x, y} | pixels]
+    end
+
+    {res, _, _} = fun.(put_pixel)
+
+    for y <- 0..(h - 1) do
+      for x <- 0..(w - 1) do
+        if Enum.member?(res, {x, y}) do
+          "x"
+        else
+          " "
+        end
+      end
+      |> to_string()
+    end
+  end
+
+  def test_canvas_no_reducer(w, h, fun) do
     {:ok, agent} = Agent.start_link(fn -> [] end)
 
     put_pixel = fn x, y ->
