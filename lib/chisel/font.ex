@@ -13,6 +13,18 @@ defmodule Chisel.Font do
           offset: {x :: integer(), y :: integer()}
         }
 
+  @type load_opts ::
+          list(
+            {:encoding,
+             :latin1
+             | :unicode
+             | :utf8
+             | :utf16
+             | :utf32
+             | {:utf16, :big | :little}
+             | {:utf32, :big | :little}}
+          )
+
   defstruct name: nil,
             glyphs: nil,
             size: nil,
@@ -21,8 +33,8 @@ defmodule Chisel.Font do
   @doc """
   Loads a font from a file
   """
-  @spec load(filename :: String.t()) :: {:ok, Font.t()} | {:error, term()}
-  defdelegate load(filename), to: Chisel.Font.Loader, as: :load_font
+  @spec load(filename :: String.t(), opts :: load_opts()) :: {:ok, Font.t()} | {:error, term()}
+  defdelegate load(filename, opts \\ []), to: Chisel.Font.Loader, as: :load_font
 
   defimpl Inspect do
     import Inspect.Algebra
