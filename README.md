@@ -75,8 +75,6 @@ Chisel is a general purpose library that can be used to render text on any targe
 
   {pixels, _, _} = Chisel.Renderer.reduce_draw_text("Hello World!", 0, 0, font, [], put_pixel)
 
-  Agent.stop(agent)
-
   for y <- 0..10 do
     for x <- 0..100 do
       if Enum.member?(pixels, {x, y}) do
