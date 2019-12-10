@@ -1,4 +1,6 @@
 defmodule Chisel.Font.BDF.Lexer do
+  @moduledoc false
+
   defstruct line: nil, col: nil, buffer: [], tokens: [], in_string?: false, in_comment?: false
 
   @token_whitespace [" ", "\t", "\r", "\n"]
