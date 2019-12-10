@@ -1,6 +1,7 @@
 defmodule Chisel.Font.BDF.ParserTest do
   use ExUnit.Case
 
+  alias Chisel.Font
   alias Chisel.Font.BDF.Parser
 
   @tokens [
@@ -93,31 +94,19 @@ defmodule Chisel.Font.BDF.ParserTest do
   test "parse!/1" do
     assert {:ok, font} = Parser.parse!(@tokens)
 
-    assert %{
-             __struct__: Chisel.Font,
+    assert %Font{
              glyphs: %{
-               128 => %{
-                 __struct__: Chisel.Font.Glyph,
+               128 => %Font.Glyph{
                  codepoint: 128,
-                 data: [
-                   <<3::size(2)>>,
-                   <<3::size(2)>>,
-                   <<3::size(2)>>,
-                   <<3::size(2)>>,
-                   <<3::size(2)>>,
-                   <<3::size(2)>>,
-                   <<3::size(2)>>,
-                   <<3::size(2)>>
-                 ],
+                 data: <<255, 255>>,
                  dwx: 8,
                  name: "C1",
                  offset: {3, 0},
                  size: {2, 8}
                },
-               129 => %{
-                 __struct__: Chisel.Font.Glyph,
+               129 => %Font.Glyph{
                  codepoint: 129,
-                 data: [<<255>>, <<255>>],
+                 data: <<255, 255>>,
                  dwx: 8,
                  name: "C2",
                  offset: {0, 3},
@@ -127,6 +116,6 @@ defmodule Chisel.Font.BDF.ParserTest do
              name: "simple_font",
              offset: {0, 0},
              size: {8, 8}
-           } == font
+           } = font
   end
 end

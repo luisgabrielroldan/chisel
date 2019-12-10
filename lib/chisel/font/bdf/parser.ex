@@ -100,11 +100,13 @@ defmodule Chisel.Font.BDF.Parser do
   end
 
   defp do_parse({:value, [row], _}, %{char: %Glyph{data: data, size: {gw, gh}}} = context)
-       when length(data) < gh do
+       when bit_size(data) < gh * gw do
     bits = trunc(String.length(row) / 2) * 8
     value = parse_int!(row, 16)
+
     <<row_data::bitstring-size(gw), _::bitstring>> = <<value::big-unsigned-integer-size(bits)>>
-    data = [row_data | context.char.data]
+
+    data = <<row_data::bitstring, data::bitstring>>
 
     context
     |> update_char(fn char -> %{char | data: data} end)
@@ -113,7 +115,7 @@ defmodule Chisel.Font.BDF.Parser do
 
   defp do_parse({:keyword, "BITMAP", [], _}, %{char: %Glyph{}} = context) do
     context
-    |> update_char(fn char -> %{char | data: []} end)
+    |> update_char(fn char -> %{char | data: <<>>} end)
     |> continue()
   end
 
@@ -145,11 +147,12 @@ defmodule Chisel.Font.BDF.Parser do
     |> continue()
   end
 
-  defp do_parse({:keyword, "ENDCHAR", [], _}, %{char: %Glyph{data: data, size: {_, h}}} = context)
-       when length(data) == h do
+  defp do_parse(
+         {:keyword, "ENDCHAR", [], _},
+         %{char: %Glyph{data: data, size: {gw, gh}}} = context
+       )
+       when bit_size(data) == gh * gw do
     %{char: char} = context
-
-    char = %{char | data: Enum.reverse(data)}
 
     context
     |> add_glyph(char)

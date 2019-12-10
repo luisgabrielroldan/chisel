@@ -185,14 +185,16 @@ defmodule Chisel.Renderer do
 
     %{
       data: data,
-      size: {_bb_w, bb_h},
+      size: {bb_w, bb_h},
       offset: {bb_xoff, bb_yoff}
     } = glyph
 
     x = gx - bb_xoff
     y = gy - bb_yoff - bb_h
 
-    do_render_glyph(data, {x, y}, reduce_pixel, opts, acc)
+    for(<<row::bitstring-size(bb_w) <- data>>, do: row)
+    |> Enum.reverse()
+    |> do_render_glyph({x, y}, reduce_pixel, opts, acc)
   end
 
   defp do_render_glyph(rows, pos, reduce_pixel, opts, acc, iy \\ 0)
@@ -211,7 +213,9 @@ defmodule Chisel.Renderer do
   defp render_glyph_row(<<>>, _pos, _iy, _put_pixel, _opts, acc, _ix),
     do: acc
 
-  defp render_glyph_row(<<1::1, rest::bitstring>>, {x, y} = pos, iy, reduce_pixel, opts, acc, ix) do
+  defp render_glyph_row(<<1::1, rest::bitstring>>, pos, iy, reduce_pixel, opts, acc, ix) do
+    {x, y} = pos
+
     acc =
       for(ox <- 0..(opts[:size_x] - 1), oy <- 0..(opts[:size_y] - 1), do: {ox, oy})
       |> Enum.reduce(acc, fn {ox, oy}, acc1 ->
