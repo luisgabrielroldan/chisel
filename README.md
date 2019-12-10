@@ -5,6 +5,16 @@
 
 Chisel is a library that uses bitmap fonts to sculpt text on any device that can handle pixels.
 
+## Setup
+
+Add Chisel to your mix.exs deps:
+
+```elixir
+{:chisel, "~> 0.2.0"},
+```
+
+Run `mix deps.get` to download the new dependency.
+
 ## Usage
 
 1. Take a function to draw pixels...
