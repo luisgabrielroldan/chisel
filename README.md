@@ -21,7 +21,7 @@ Run `mix deps.get` to download the new dependency.
 
 ```elixir
   put_pixel = fn x, y ->
-    thing.draw_pixel(x, y, ...)
+    YourDisplay.draw_pixel(x, y, ...)
   end
 ```
 
