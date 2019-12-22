@@ -30,7 +30,7 @@ defmodule Chisel.MixProject do
 
   defp description do
     """
-    Chisel is a library that uses bitmap fonts to scuplt text on any device that can handle pixels.
+    Chisel is a library that uses bitmap fonts to sculpt text on any device that can handle pixels.
     """
   end
 
