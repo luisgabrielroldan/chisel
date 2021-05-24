@@ -92,7 +92,7 @@ defmodule Chisel.Renderer do
           reduce_pixel :: reduce_pixel_fun,
           opts :: draw_options()
         ) ::
-          {x :: integer(), y :: integer()}
+          {acc :: acc(), x :: integer(), y :: integer()}
   def reduce_draw_text(text, tlx, tly, %Font{} = font, acc, reduce_pixel, opts \\ [])
       when is_binary(text) do
     opts = Keyword.merge(@draw_default_opts, opts)
@@ -132,7 +132,7 @@ defmodule Chisel.Renderer do
           reduce_pixel :: reduce_pixel_fun,
           opts :: draw_options()
         ) ::
-          {x :: integer(), y :: integer()}
+          {acc :: acc(), x :: integer(), y :: integer()}
   def reduce_draw_char(codepoint, clx, cly, %Font{} = font, acc, reduce_pixel, opts \\ [])
       when is_integer(codepoint) do
     opts = Keyword.merge(@draw_default_opts, opts)
