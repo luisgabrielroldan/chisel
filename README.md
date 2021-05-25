@@ -1,5 +1,6 @@
 # Chisel
-[![CircleCI](https://circleci.com/gh/luisgabrielroldan/chisel.svg?style=svg)](https://circleci.com/gh/luisgabrielroldan/chisel)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/luisgabrielroldan/chisel/tests)
+[![github.com](https://img.shields.io/github/last-commit/luisgabrielroldan/chisel.svg)](https://github.com/luisgabrielroldan/chisel/commits/master)
 [![Hex version](https://img.shields.io/hexpm/v/chisel.svg "Hex version")](https://hex.pm/packages/chisel)
 [![Hex docs](http://img.shields.io/badge/hex.pm-docs-green.svg "Hex docs")](https://hexdocs.pm/chisel)
 
