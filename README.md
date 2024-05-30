@@ -68,7 +68,7 @@ Chisel is a general purpose library that can be used to render text on any targe
 ### Render ASCII art
 
 ```elixir
-  put_pixel = fn x, y ->
+  put_pixel = fn x, y, pixels ->
     [{x, y} | pixels]
   end
 
