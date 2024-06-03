@@ -31,7 +31,7 @@ defmodule Chisel.Renderer do
 
   Chisel will use this function to draw the text.
   """
-  @type reduce_pixel_fun :: (acc :: acc(), x :: integer(), y :: integer() -> acc())
+  @type reduce_pixel_fun :: (x :: integer(), y :: integer(), acc :: acc() -> acc())
 
   @doc """
   Draws an string
@@ -45,8 +45,7 @@ defmodule Chisel.Renderer do
           font :: Font.t(),
           put_pixel :: pixel_fun,
           opts :: draw_options()
-        ) ::
-          {x :: integer(), y :: integer()}
+        ) :: {x :: integer(), y :: integer()}
   def draw_text(text, tlx, tly, %Font{} = font, put_pixel, opts \\ []) when is_binary(text) do
     reduce_pixel = fn x, y, _ -> put_pixel.(x, y) end
 
@@ -67,8 +66,7 @@ defmodule Chisel.Renderer do
           font :: Font.t(),
           put_pixel :: pixel_fun,
           opts :: draw_options()
-        ) ::
-          {x :: integer(), y :: integer()}
+        ) :: {x :: integer(), y :: integer()}
   def draw_char(codepoint, clx, cly, %Font{} = font, put_pixel, opts \\ [])
       when is_integer(codepoint) do
     reduce_pixel = fn x, y, _ -> put_pixel.(x, y) end
@@ -91,8 +89,7 @@ defmodule Chisel.Renderer do
           acc :: acc(),
           reduce_pixel :: reduce_pixel_fun,
           opts :: draw_options()
-        ) ::
-          {acc :: acc(), x :: integer(), y :: integer()}
+        ) :: {acc :: acc(), x :: integer(), y :: integer()}
   def reduce_draw_text(text, tlx, tly, %Font{} = font, acc, reduce_pixel, opts \\ [])
       when is_binary(text) do
     opts = Keyword.merge(@draw_default_opts, opts)
@@ -131,8 +128,7 @@ defmodule Chisel.Renderer do
           acc :: acc(),
           reduce_pixel :: reduce_pixel_fun,
           opts :: draw_options()
-        ) ::
-          {acc :: acc(), x :: integer(), y :: integer()}
+        ) :: {acc :: acc(), x :: integer(), y :: integer()}
   def reduce_draw_char(codepoint, clx, cly, %Font{} = font, acc, reduce_pixel, opts \\ [])
       when is_integer(codepoint) do
     opts = Keyword.merge(@draw_default_opts, opts)
