@@ -107,7 +107,7 @@ defmodule Chisel.Font.BDF.Lexer do
     do: %{ctx | buffer: []}
 
   defp get_buffer(%{buffer: buffer}),
-    do: Enum.reverse(buffer) |> to_string()
+    do: Enum.reverse(buffer) |> :unicode.characters_to_binary(:latin1)
 
   defp continue(%{tokens: []} = ctx),
     do: {[], ctx}
