@@ -1,5 +1,15 @@
 defmodule Chisel.Font.Glyph do
-  @moduledoc false
+  @moduledoc """
+  Defines a glyph for font rendering, including its properties and bitmap data. Useful for managing glyph rendering in graphics applications.
+
+  ## Attributes
+  - `name`: Identifies the glyph.
+  - `codepoint`: Unicode codepoint of the glyph.
+  - `dwx`: Horizontal drawing width.
+  - `size`: Width and height of the glyph.
+  - `offset`: Position offset from the baseline.
+  - `data`: Bitmap data of the glyph.
+  """
 
   @type codepoint :: integer()
   @type data :: list(binary())

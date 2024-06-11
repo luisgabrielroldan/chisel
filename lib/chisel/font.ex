@@ -1,6 +1,6 @@
 defmodule Chisel.Font do
   @moduledoc """
-  Font
+  Interface for managing fonts
   """
 
   alias Chisel.Font
