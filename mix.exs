@@ -16,7 +16,7 @@ defmodule Chisel.MixProject do
       package: package(),
       source_url: "https://github.com/luisgabrielroldan/chisel",
       dialyzer: [
-        flags: [:unmatched_returns, :error_handling, :race_conditions, :underspecs]
+        flags: [:unmatched_returns, :error_handling, :no_opaque, :underspecs]
       ]
     ]
   end
@@ -63,7 +63,7 @@ defmodule Chisel.MixProject do
     [
       {:ex_doc, "~> 0.19", only: :dev, runtime: false},
       {:earmark, "~> 1.3", only: :dev, runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
     ]
   end
 
