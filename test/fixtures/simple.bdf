@@ -2,6 +2,7 @@ STARTFONT 2.1
 COMMENT Lorem ipsum dolor set
 FONT simple_font
 SIZE 8 72 72
+COPYRIGHT "©"
 
 CHARS 2
 STARTCHAR C1
